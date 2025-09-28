@@ -1,17 +1,10 @@
-from dataclasses import dataclass
 from ortools.sat.python.cp_model import CpModel, CpSolver, OPTIMAL, FEASIBLE
 
 import numpy as np
 
 
-@dataclass
-class TspSetup:
-    start: int
-    distances: np.ndarray
-
-
-def shortest_path(nodes: TspSetup) -> tuple[list[int], float]:
-    N = nodes.distances.shape[0]
+def find_shortest_tour(distances: np.ndarray, start: int) -> tuple[list[int], float]:
+    N = distances.shape[0]
     cp_m = CpModel()
 
     x = []  # 1 if ij in tour
@@ -24,7 +17,7 @@ def shortest_path(nodes: TspSetup) -> tuple[list[int], float]:
         ds = []
         for j in range(N):
             js.append(cp_m.NewBoolVar(f"x_{i}_{j}"))
-            ds.append(nodes.distances[i, j])
+            ds.append(distances[i, j])
         x.append(js)
         d.append(ds)
         u.append(cp_m.NewIntVar(1, N, f"u_{i}"))
@@ -36,9 +29,9 @@ def shortest_path(nodes: TspSetup) -> tuple[list[int], float]:
     for j in range(N):
         cp_m.add(sum(x[i][j] for i in range(N)) == 1)
     for i in range(N):
-        if i != nodes.start:
+        if i != start:
             for j in range(N):
-                if j != nodes.start:
+                if j != start:
                     cp_m.add(u[i] - u[j] + x[i][j] * N <= (N - 1))
         else:
             cp_m.add(u[i] == 1)
@@ -49,7 +42,7 @@ def shortest_path(nodes: TspSetup) -> tuple[list[int], float]:
     solver = CpSolver()
     status = solver.solve(cp_m)
 
-    result = [nodes.start]
+    result = [start]
     if status == OPTIMAL or status == FEASIBLE:
         while len(result) < N + 1:
             s = result[-1]
