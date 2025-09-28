@@ -9,6 +9,7 @@ dependencies = [
     "matplotlib>=3.10.6",
     "numpy>=2.3.3",
     "ortools>=9.14.6206",
+    "pre-commit>=4.3.0",
 ]
 
 [dependency-groups]
