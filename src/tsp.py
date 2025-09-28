@@ -4,6 +4,21 @@ import numpy as np
 
 
 def find_shortest_tour(distances: np.ndarray, start: int) -> tuple[list[int], float]:
+    """
+    Solves the Traveling Salesman Problem (TSP) using the Google OR Tools CP-SAT solver.
+    Given a distance matrix and a starting node, finds the shortest possible tour
+    that visits each node exactly once and returns to the starting node.
+
+    Args:
+        distances (np.ndarray): A 2D numpy array of shape (N, N) representing the distances
+            between N nodes.
+        start (int): The index of the starting node.
+    Returns:
+        tuple[list[int], float]: A tuple containing:
+            - The list of node indices representing the order of the shortest tour (including the
+              return to the start).
+            - The total distance of the shortest tour.
+    """
     N = distances.shape[0]
     cp_m = CpModel()
 
